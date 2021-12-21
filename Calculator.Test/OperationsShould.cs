@@ -3,13 +3,13 @@ using Xunit;
 
 namespace Calculator.Test
 {
-    public class CalculatorShould
+    public class OperationsShould
     {
-        private readonly Calculator _sut;
+        private readonly Operations _sut;
 
-        public CalculatorShould()
+        public OperationsShould()
         {
-            _sut = new Calculator();
+            _sut = new Operations();
         }
 
         [Theory]
@@ -32,6 +32,23 @@ namespace Calculator.Test
         }
 
         [Theory]
+        [InlineData(11.2, new double[] { 0, 1, 2.2, 3, 5 })]
+        [InlineData(1.2, new double[] { 1, -0, 2.2, 3, -5 })]
+        [InlineData(1.2, new double[] { 0.1, 1.1 })]
+        [InlineData(2, new double[] { 1, 1 })]
+        public void AddMultipleNumbers(double expected, double[] input)
+        {
+            // assemble
+            double result;
+
+            // act
+            result = _sut.Add(input);
+
+            // assert
+            Assert.Equal(expected, result, 4);
+        }
+
+        [Theory]
         [InlineData(1, 1, 0)]
         [InlineData(-1, 1, -2)]
         [InlineData(123, -23, 146)]
@@ -45,6 +62,24 @@ namespace Calculator.Test
 
             // act
             result = _sut.Subtract(a, b);
+
+            // assert
+            Assert.Equal(expected, result, 4);
+        }
+
+        [Theory]
+        [InlineData(-11.2, new double[] { 0, 1, 2.2, 3, 5, 0 })]
+        [InlineData(0.8, new double[] { 1, -0, 2.2, 3, -5 })]
+        [InlineData(-1, new double[] { 0.1, 1.1 })]
+        [InlineData(-1.2, new double[] { -0.1, 1.1 })]
+        [InlineData(0, new double[] { 1, 1 })]
+        public void SubtractMultipleNumbers(double expected, double[] input)
+        {
+            // assemble
+            double result;
+
+            // act
+            result = _sut.Subtract(input);
 
             // assert
             Assert.Equal(expected, result, 4);

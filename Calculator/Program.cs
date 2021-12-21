@@ -6,9 +6,8 @@ namespace Calculator
     {
         static void Main(string[] args)
         {
-            ConsoleWrapper consoleWrapper = new ConsoleWrapper();
-            Menu menu = new Menu(consoleWrapper);
-            menu.Run();
+            Calculator calculator = new Calculator();
+            calculator.Run();
         }
     }
 }

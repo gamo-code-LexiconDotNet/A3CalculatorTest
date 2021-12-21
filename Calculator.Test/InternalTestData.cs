@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Calculator.Test
 {
-    public class InternalMenuTestData
+    public class InternalTestData
     {
         public static IEnumerable<object[]> MenuText
         {

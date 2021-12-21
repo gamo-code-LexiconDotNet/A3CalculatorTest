@@ -1,54 +1,42 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace Calculator
 {
     public class Calculator
     {
-        public double Add(double a, double b)
+        private readonly Menu menu;
+        private readonly HandleOperations handleOperations;
+        public Calculator()
         {
-            return a + b;
+            menu = new Menu(new ConsoleWrapper());
+            handleOperations = new HandleOperations(
+                new HandleInput(
+                    new ConsoleWrapper()),
+                new Operations(),
+                new ConsoleWrapper());
+
+            SetupMenu();
         }
 
-        public double Subtract(double a, double b)
+        private void SetupMenu()
         {
-            return a - b;
+            menu.Heading = "[Lexicon C#/.Net Programming] Assignment 3 - Calculator Test]";
+            menu.Title = "Choose what to do:";
+            menu.AddItem("1", "Add (a + b)", handleOperations.Add);
+            menu.AddItem("2", "Subtract (a - b)", handleOperations.Subtract);
+            menu.AddItem("3", "Multiply (a * b)", handleOperations.Multiply);
+            menu.AddItem("4", "Divide (a / b)", handleOperations.Divide);
+            menu.AddItem("5", "Modulo (a mod b)", handleOperations.Modulo);
+            menu.AddItem("6", "Power (a ^ b)", handleOperations.Power);
+            menu.AddItem("7", "Root (a ^ 1/b)", handleOperations.Root);
+            menu.AddItem("8", "Log (Log a / Log b)", handleOperations.Log);
         }
 
-        public double Divide(double a, double b)
+        public void Run()
         {
-            if (b == 0)
-                throw new DivideByZeroException();
-            return a / b;
-        }
-
-        public double Multiply(double a, double b)
-        {
-            return a * b;
-        }
-
-        public double Modulo(double a, double b)
-        {
-            return a % b;
-        }
-
-        public double Power(double a, double b)
-        {
-            return Math.Pow(a, b);
-        }
-
-        // b root of a
-        public double Root(double a, double b)
-        {
-            if (b == 0)
-                throw new DivideByZeroException();
-            return Math.Pow(a, 1 / b);
-        }
-
-
-        // log a base b
-        public double Log(double a, double b)
-        {
-            return Math.Log(a) / Math.Log(b);
+            menu.Run();
         }
     }
 }

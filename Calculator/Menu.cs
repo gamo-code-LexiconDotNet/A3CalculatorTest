@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Text;
 
@@ -8,148 +7,98 @@ namespace Calculator
 {
     public class Menu
     {
-        private readonly IConsoleWrapper _consoleWrapper;
-        private readonly Calculator _calculator;
+        private Dictionary<string, MenuItem> menu = new Dictionary<string, MenuItem>();
+        private IConsoleWrapper consoleWrapper;
+        public string Title { get; set; }
+        public string Heading { get; set; }
 
         public Menu(IConsoleWrapper consoleWrapper)
         {
-            _consoleWrapper = consoleWrapper;
-            _calculator = new Calculator();
+            this.consoleWrapper = consoleWrapper;
+        }
+
+        public Menu(
+            IConsoleWrapper consoleWrapper,
+            string title,
+            string heading)
+            : this(consoleWrapper)
+        {
+            Title = title;
+            Heading = heading;
         }
 
         public void Run()
         {
             bool show = true;
             while (show)
-                show = PrintMenu();
+            {
+                consoleWrapper.Clear();
+                PrintMenu();
+
+                string input = consoleWrapper.ReadLine();
+
+                if (input.Equals("0"))
+                {
+                    show = false;
+                    break;
+                }
+
+                try
+                {
+                    menu[input].Act();
+                }
+                catch (KeyNotFoundException) 
+                {
+                    continue;
+                }
+                catch (Exception ex)
+                {
+                    consoleWrapper.WriteLine(ex.Message);
+                }
+                HoldAndClear();
+            }
         }
 
-        /**
-         * Menu items
-         */
-        private readonly string[] menuItems =
-        {
-            "Add a to b (a + b)",                      //1
-            "Divide a by b (a / b)",                   //2
-            "Subtract b from a (a - b)",               //3
-            "Multiply a with b (a * b)",               //4
-            "Take to power of b to a (a ^ b)",         //5
-            "Take the b root of a (a ^ (1 / b))",      //6
-            "Take modulo b of a (a % b)",              //7
-            "Take Log a with base b (Log(a) / Log(b)"  //8
-        };
-
-        /**
-         * Menu
-         */
-        private bool PrintMenu()
+        private void PrintMenu()
         {
             StringBuilder sb = new StringBuilder();
 
-            sb.AppendLine("[Lexicon C#/.Net Programming] Assignment 3 - Calculator Test\n");
-            sb.AppendLine("Choose what to calculate:");
-            for (int i = 0; i < menuItems.Length; i++)
-            {
-                sb.AppendLine($"{i + 1})  {menuItems[i]}");
-            }
-           sb.Append(
-                "0)  Exit\n" +
-                "> "
-            );
-            _consoleWrapper.Write(sb.ToString());
+            sb.Append($"{Heading}\n\n");
 
-            string input = _consoleWrapper.ReadLine();
-            _consoleWrapper.Clear();
-            return input switch
+            sb.Append($"{Title}\n");
+            for (int i = 0; i < menu.Count; i++)
             {
-                "0" => false,
-                "1" => HandleOperation(menuItems[0], _calculator.Add),
-                "2" => HandleOperation(menuItems[1], _calculator.Divide),
-                "3" => HandleOperation(menuItems[2], _calculator.Subtract),
-                "4" => HandleOperation(menuItems[3], _calculator.Multiply),
-                "5" => HandleOperation(menuItems[4], _calculator.Power),
-                "6" => HandleOperation(menuItems[5], _calculator.Root),
-                "7" => HandleOperation(menuItems[6], _calculator.Modulo),
-                "8" => HandleOperation(menuItems[7], _calculator.Log),
-                _ => true,
-            };
+                string zero = menu.ElementAt(i).Key;
+                string one = menu.ElementAt(i).Value.Text;
+
+                sb.Append($"{zero}) {one}.\n");
+            }
+            sb.Append("0) Exit\n> ");
+
+            consoleWrapper.Write(sb.ToString());
         }
 
-        /**
-         * Handles the calls fom menu
-         * Read input
-         * Try math operation and write output
-         * Handle exceptions
-         */
-        private bool HandleOperation(string message, Func<double, double, double> mathOperation)
+        private void HoldAndClear(string message = "\n\tPress any key to continue...")
         {
-            _consoleWrapper.WriteLine(message);
-            double a = ReadNumber<double>("Input a", "a must be a number");
-            double b = ReadNumber<double>("Input b", "b must be a number");
-
-            try
-            {
-                _consoleWrapper.WriteLine("=> " + Math.Round(mathOperation(a, b), 4).ToString());
-            }
-            catch (Exception ex)
-            {
-                if (ex is DivideByZeroException)
-                    _consoleWrapper.WriteLine("Cannot divide by Zero.");
-                else
-                    _consoleWrapper.WriteLine(ex.ToString());
-            }
-
-            return HoldAndClear();
+            consoleWrapper.Write(message);
+            consoleWrapper.ReadKey();
+            consoleWrapper.Clear();
         }
 
-        /**
-         * Hold for key and clear console
-         */
-        private bool HoldAndClear(string message = "\n\tPress any key to continue...")
+        public void AddItem(string option, string text, Action action)
         {
-            _consoleWrapper.Write(message);
-            _consoleWrapper.ReadKey();
-            _consoleWrapper.Clear();
-            return true;
+            menu.Add(option, new MenuItem(text, action));
         }
 
-        /**
-         * Read number from input
-         * Templated for different types
-         * Asks for new input if input of wrong type (convert fails)
-         */
-        private T ReadNumber<T>(
-            string message = "Input a number",
-            string error = "You must input a number",
-            int attempts = 100)
+        private class MenuItem
         {
-            _consoleWrapper.Write($"{message}\n> ");
-            while (attempts > 0)
-                try
-                {
-                    return (T)ConvertStringToNumber<T>(_consoleWrapper.ReadLine());
-                }
-                catch
-                {
-                    _consoleWrapper.Write($"{error}\n> ");
-                    attempts--;
-                }
-
-            throw new Exception("Could not read number from input");
-        }
-
-        private T ConvertStringToNumber<T>(string str)
-        {
-            TypeConverter converter;
-            try
+            public string Text { get; private set; }
+            public Action Act { get; private set; }
+            public MenuItem(string text, Action action)
             {
-                converter = TypeDescriptor.GetConverter(typeof(T));
-                return (T)converter.ConvertFromString(str);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
+                Text = text;
+                Act = action;
             }
         }
-    } // class
-} // namespace
+    }
+}

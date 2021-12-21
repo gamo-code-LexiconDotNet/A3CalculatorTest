@@ -1,126 +1,44 @@
 ﻿using Moq;
+using Moq.AutoMock;
 using System;
 using Xunit;
 
 namespace Calculator.Test
 {
-    public class MenuShould : IDisposable
+    public class MenuShould
     {
-        private Menu _menu;
-        private Mock<IConsoleWrapper> _mockConsoleWrapper;
+        private Menu sut;
+        private AutoMocker mocker;
 
         public MenuShould()
         {
-            _mockConsoleWrapper = new Mock<IConsoleWrapper>();
-        }
-
-        public void Dispose()
-        {
-            _mockConsoleWrapper.Reset();
-        }
-
-        [Theory]
-        [MemberData(nameof(InternalMenuTestData.MenuText), MemberType = typeof(InternalMenuTestData))]
-        public void PrintTheMenu(string menuText)
-        {
-            // assemble
-            _mockConsoleWrapper
-                .Setup(t => t.ReadLine())
-                .Returns("0");
-
-            // act
-            _menu = new Menu(_mockConsoleWrapper.Object);
-            _menu.Run();
-
-            // assert
-            _mockConsoleWrapper.Verify(t => t.Write(menuText), Times.Once());
-        }
-
-        [Theory]
-        [MemberData(nameof(InternalMenuTestData.MenuText), MemberType = typeof(InternalMenuTestData))]
-        public void ReprintMenuOnIncorrectOption(string menuText)
-        {
-            // assemble
-            _mockConsoleWrapper
-                .SetupSequence(t => t.ReadLine())
-                .Returns("q")
-                .Returns("0");
-
-
-            // act
-            _menu = new Menu(_mockConsoleWrapper.Object);
-            _menu.Run();
-
-            // assert
-            _mockConsoleWrapper.Verify(t => t.Write(menuText), Times.Exactly(2));
-        }
-
-        [Theory]
-        [MemberData(nameof(InternalMenuTestData.Options), MemberType = typeof(InternalMenuTestData))]
-        public void UseMenuOptions(string menuOption, string a, string b, string expected)
-        {
-            // assemble
-            _mockConsoleWrapper
-                .SetupSequence(t => t.ReadLine())
-                .Returns(menuOption)
-                .Returns(a)
-                .Returns(b)
-                .Returns("0");
-
-            // act
-            _menu = new Menu(_mockConsoleWrapper.Object);
-            _menu.Run();
-
-            // assert
-            _mockConsoleWrapper.Verify(t => t.WriteLine($"=> {expected}"), Times.Once());
-        }
-
-        [Theory]
-        [MemberData(nameof(InternalMenuTestData.OptionsDivideByZero), MemberType = typeof(InternalMenuTestData))]
-        public void NotDivideByZero(string menuOption, string a, string b, string expected)
-        {
-            // assemble
-            _mockConsoleWrapper
-                .SetupSequence(t => t.ReadLine())
-                .Returns(menuOption)
-                .Returns(a)
-                .Returns(b)
-                .Returns("0");
-
-            // act
-            _menu = new Menu(_mockConsoleWrapper.Object);
-            _menu.Run();
-
-            // assert
-            _mockConsoleWrapper.Verify(t => t.WriteLine(expected), Times.Once());
+            mocker = new AutoMocker();
+            sut = mocker.CreateInstance<Menu>();
         }
 
         [Fact]
-        public void OnlyReadNumbers()
+        public void AddMenuItems()
         {
             // assemble
-            string expecteda = "a must be a number\n> ";
-            string expectedb = "b must be a number\n> ";
+            sut.Title = "Title";
+            sut.Heading = "Heading";
+            //sut.AddItem("1", "One", Invoker);
+            //sut.AddItem("1", "One", () => new string("ONE"));
+            sut.AddItem("2", "Two", () => new string("TWO"));
+            sut.AddItem("a", "a", () => new string("A"));
 
-            _mockConsoleWrapper
-                .SetupSequence(t => t.ReadLine())
-                .Returns("1")
-                .Returns("not number")
-                .Returns("1")
-                .Returns("not number")
+            mocker.GetMock<IConsoleWrapper>()
+                .SetupSequence(p => p.ReadLine())
                 .Returns("1")
                 .Returns("0");
 
             // act
-            _menu = new Menu(_mockConsoleWrapper.Object);
-            _menu.Run();
+            sut.Run();
 
-            // assert
-            _mockConsoleWrapper.Verify(t => t.Write(expecteda), Times.Once());
-            _mockConsoleWrapper.Verify(t => t.Write(expectedb), Times.Once());
+            // Assert
+            mocker.GetMock<IConsoleWrapper>()
+                .Verify(p => p.Write("ONE"), Times.Once);
+
         }
-
-
-
     }
 }

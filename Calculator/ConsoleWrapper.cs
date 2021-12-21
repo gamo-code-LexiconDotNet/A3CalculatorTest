@@ -25,6 +25,11 @@ namespace Calculator
             Console.Write(value);
         }
 
+        public void Write(string format, params object[] args)
+        {
+            Console.Write(format, args);
+        }
+
         public void Clear()
         {
             Console.Clear();

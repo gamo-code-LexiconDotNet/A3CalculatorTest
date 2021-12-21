@@ -10,6 +10,7 @@ namespace Calculator
         char ReadKey();
         void WriteLine(string value);
         void Write(string value);
+        void Write(string format, params object[] args);
         void Clear();
     }
 }
