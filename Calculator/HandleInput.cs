@@ -8,7 +8,7 @@ namespace Calculator
 {
     public class HandleInput : IHandleInput
     {
-        private IConsoleWrapper consoleWrapper;
+        private readonly IConsoleWrapper consoleWrapper;
 
         public HandleInput(IConsoleWrapper consoleWrapper)
         {

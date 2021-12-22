@@ -7,8 +7,8 @@ namespace Calculator.Test
 {
     public class MenuShould
     {
-        private Menu sut;
-        private AutoMocker mocker;
+        private readonly Menu sut;
+        private readonly AutoMocker mocker;
 
         public MenuShould()
         {
@@ -47,7 +47,8 @@ namespace Calculator.Test
         [Fact]
         public void HoldAfterSelectionAnReturn()
         {
-            string press = "\n\tPress any key to continue...";
+            // assemble
+            string press = "\n\n\tPress any key to continue...";
 
             mocker.GetMock<IConsoleWrapper>()
                 .SetupSequence(p => p.ReadLine())
@@ -60,6 +61,51 @@ namespace Calculator.Test
             // Assert
             mocker.GetMock<IConsoleWrapper>()
                 .Verify(p => p.Write(press), Times.Once);
+        }
+
+        [Fact]
+        public void CatchInvalidMenuOption()
+        {
+            // assemble
+            string menu =
+               "Heading\n\n" +
+               "Title\n" +
+               "1) One.\n" +
+               "0) Exit.\n" +
+               "> ";
+
+            mocker.GetMock<IConsoleWrapper>()
+                .SetupSequence(p => p.ReadLine())
+                .Returns("2")
+                .Returns("x")
+                .Returns("0");
+
+            // act
+            sut.Run();
+
+            // Assert
+            mocker.GetMock<IConsoleWrapper>()
+                .Verify(p => p.Write(menu), Times.Exactly(3));
+        }
+
+        [Fact]
+        public void CatchExceptions()
+        {
+            // assemble
+            string message = "Custom Message";
+            sut.AddItem("2", "Two", () => throw new DivideByZeroException(message));
+            
+            mocker.GetMock<IConsoleWrapper>()
+                .SetupSequence(p => p.ReadLine())
+                .Returns("2")
+                .Returns("0");
+
+            // act
+            sut.Run();
+
+            // Assert
+            mocker.GetMock<IConsoleWrapper>()
+                .Verify(p => p.Write(message), Times.Once);
         }
     }
 }

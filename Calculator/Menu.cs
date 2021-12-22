@@ -7,8 +7,8 @@ namespace Calculator
 {
     public class Menu
     {
-        private Dictionary<string, MenuItem> menu = new Dictionary<string, MenuItem>();
-        private IConsoleWrapper consoleWrapper;
+        private readonly Dictionary<string, MenuItem> menu = new Dictionary<string, MenuItem>();
+        private readonly IConsoleWrapper consoleWrapper;
         public string Title { get; set; }
         public string Heading { get; set; }
 
@@ -77,7 +77,7 @@ namespace Calculator
             consoleWrapper.Write(sb.ToString());
         }
 
-        private void HoldAndClear(string message = "\n\tPress any key to continue...")
+        private void HoldAndClear(string message = "\n\n\tPress any key to continue...")
         {
             consoleWrapper.Write(message);
             consoleWrapper.ReadKey();

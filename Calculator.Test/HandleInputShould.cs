@@ -9,8 +9,8 @@ namespace Calculator.Test
 {
     public class HandleInputShould
     {
-        private IHandleInput sut;
-        private AutoMocker mocker;
+        private readonly HandleInput sut;
+        private readonly AutoMocker mocker;
 
         public HandleInputShould()
         {
