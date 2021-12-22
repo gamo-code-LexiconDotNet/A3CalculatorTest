@@ -24,8 +24,8 @@ namespace Calculator
         {
             menu.Heading = "[Lexicon C#/.Net Programming] Assignment 3 - Calculator Test]";
             menu.Title = "Choose what to do:";
-            menu.AddItem("1", "Add (a + b)", handleOperations.Add);
-            menu.AddItem("2", "Subtract (a - b)", handleOperations.Subtract);
+            menu.AddItem("1", "Add (a + b + c + ...)", handleOperations.Add);
+            menu.AddItem("2", "Subtract (a - b - c - ...)", handleOperations.Subtract);
             menu.AddItem("3", "Multiply (a * b)", handleOperations.Multiply);
             menu.AddItem("4", "Divide (a / b)", handleOperations.Divide);
             menu.AddItem("5", "Modulo (a mod b)", handleOperations.Modulo);

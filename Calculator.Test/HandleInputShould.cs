@@ -10,15 +10,12 @@ namespace Calculator.Test
     public class HandleInputShould
     {
         private IHandleInput sut;
-        //private Mock<IConsoleWrapper> _mockConsoleWrapper;
         private AutoMocker mocker;
 
         public HandleInputShould()
         {
-            //_mockConsoleWrapper = new Mock<IConsoleWrapper>();
             mocker = new AutoMocker();
             sut = mocker.CreateInstance<HandleInput>();
-
         }
 
         [Theory]
@@ -38,7 +35,7 @@ namespace Calculator.Test
                 .Returns(input[0])
                 .Returns(input[1])
                 .Returns(input[2]);
-            string inputs = incount > 0 ? incount.ToString() : "";
+            string inputs = incount > 0 ? " " + incount.ToString() : "";
             string multiInput = multi ? " (end with \";\")" : "";
             
             // act
@@ -46,7 +43,7 @@ namespace Calculator.Test
 
             // assert
             mocker.GetMock<IConsoleWrapper>().Verify(
-                t => t.Write("Input {0} number{1}{2}: ", inputs, pluralized, multiInput),
+                t => t.Write("Input{0} number{1}{2}: ", inputs, pluralized, multiInput),
                 Times.AtLeastOnce());
             Assert.Equal(expected, result);
         }

@@ -68,12 +68,11 @@ namespace Calculator
             sb.Append($"{Title}\n");
             for (int i = 0; i < menu.Count; i++)
             {
-                string zero = menu.ElementAt(i).Key;
-                string one = menu.ElementAt(i).Value.Text;
-
-                sb.Append($"{zero}) {one}.\n");
+                sb.AppendFormat("{0}) {1}.\n",
+                    menu.ElementAt(i).Key,
+                    menu.ElementAt(i).Value.Text);
             }
-            sb.Append("0) Exit\n> ");
+            sb.Append("0) Exit.\n> ");
 
             consoleWrapper.Write(sb.ToString());
         }

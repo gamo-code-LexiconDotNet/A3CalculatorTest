@@ -5,11 +5,11 @@ namespace Calculator.Test
 {
     public class OperationsShould
     {
-        private readonly Operations _sut;
+        private readonly Operations sut;
 
         public OperationsShould()
         {
-            _sut = new Operations();
+            sut = new Operations();
         }
 
         [Theory]
@@ -25,7 +25,7 @@ namespace Calculator.Test
             double result;
 
             // act
-            result = _sut.Add(a, b);
+            result = sut.Add(a, b);
 
             // assert
             Assert.Equal(expected, result, 4);
@@ -42,7 +42,7 @@ namespace Calculator.Test
             double result;
 
             // act
-            result = _sut.Add(input);
+            result = sut.Add(input);
 
             // assert
             Assert.Equal(expected, result, 4);
@@ -61,7 +61,7 @@ namespace Calculator.Test
             double result;
 
             // act
-            result = _sut.Subtract(a, b);
+            result = sut.Subtract(a, b);
 
             // assert
             Assert.Equal(expected, result, 4);
@@ -79,7 +79,7 @@ namespace Calculator.Test
             double result;
 
             // act
-            result = _sut.Subtract(input);
+            result = sut.Subtract(input);
 
             // assert
             Assert.Equal(expected, result, 4);
@@ -98,7 +98,7 @@ namespace Calculator.Test
             double result;
 
             // act
-            result = _sut.Divide(a, b);
+            result = sut.Divide(a, b);
 
             // assert
             Assert.Equal(expected, result, 4);
@@ -117,7 +117,7 @@ namespace Calculator.Test
             double result;
 
             // act
-            result = _sut.Multiply(a, b);
+            result = sut.Multiply(a, b);
 
             // assert
             Assert.Equal(expected, result, 4);
@@ -136,7 +136,7 @@ namespace Calculator.Test
             double result;
 
             // act
-            result = _sut.Modulo(a, b);
+            result = sut.Modulo(a, b);
 
             // assert
             Assert.Equal(expected, result, 4);
@@ -155,7 +155,7 @@ namespace Calculator.Test
             double result;
 
             // act
-            result = _sut.Power(a, b);
+            result = sut.Power(a, b);
 
             // assert
             Assert.Equal(expected, result, 4);
@@ -174,7 +174,7 @@ namespace Calculator.Test
             double result;
 
             // act
-            result = _sut.Root(a, b);
+            result = sut.Root(a, b);
 
             // assert
             Assert.Equal(expected, result, 4);
@@ -193,7 +193,7 @@ namespace Calculator.Test
             double result;
 
             // act
-            result = _sut.Log(a, b);
+            result = sut.Log(a, b);
 
             // assert
             Assert.Equal(expected, result, 4);
@@ -210,8 +210,27 @@ namespace Calculator.Test
             // act
 
             // assert
-            Assert.Throws<DivideByZeroException>(() => _sut.Divide(a, b));
-            Assert.Throws<DivideByZeroException>(() => _sut.Root(a, b));
+            Assert.Throws<DivideByZeroException>(() => sut.Divide(a, b));
+            Assert.Throws<DivideByZeroException>(() => sut.Root(a, b));
+        }
+
+        [Fact]
+        public void ThrowWhenGivenIncorrectArguments()
+        {
+            // assemble
+            double[] a = new double[] { };
+            double[] b = new double[] { 1 };
+
+            // act
+
+            // assert
+            Assert.Throws<ArgumentException>(() => sut.Log(-1, 1));
+            Assert.Throws<ArgumentException>(() => sut.Log(1, -1));
+            Assert.Throws<ArgumentException>(() => sut.Log(-1, -1));
+            Assert.Throws<ArgumentException>(() => sut.Add(a));
+            Assert.Throws<ArgumentException>(() => sut.Add(b));
+            Assert.Throws<ArgumentException>(() => sut.Subtract(a));
+            Assert.Throws<ArgumentException>(() => sut.Subtract(b));
         }
     }
 }

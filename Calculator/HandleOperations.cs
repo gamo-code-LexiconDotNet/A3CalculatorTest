@@ -50,8 +50,6 @@ namespace Calculator
         public void Divide()
         {
             double[] input = inputHandler.ReadNumbers<double>(2);
-            if (input[1] == 0)
-                throw new DivideByZeroException("Cannot divide by zero.");
             Print(operations.Divide(input[0], input[1]));
         }
 
@@ -76,16 +74,12 @@ namespace Calculator
         public void Root()
         {
             double[] input = inputHandler.ReadNumbers<double>(2);
-            if (input[1] == 0)
-                throw new DivideByZeroException("Cannot divide by zero.");
             Print(operations.Root(input[0], input[1]));
         }
 
         public void Log()
         {
             double[] input = inputHandler.ReadNumbers<double>(2);
-            if (input[0] <= 0 || input[1] <= 0)
-                throw new ArgumentException("Cannot Log negative numbers.");
             Print(operations.Log(input[0], input[1]));
         }
     }

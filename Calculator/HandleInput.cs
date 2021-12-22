@@ -8,38 +8,44 @@ namespace Calculator
 {
     public class HandleInput : IHandleInput
     {
-        private IConsoleWrapper _consoleWrapper;
+        private IConsoleWrapper consoleWrapper;
+
         public HandleInput(IConsoleWrapper consoleWrapper)
         {
-            _consoleWrapper = consoleWrapper;
+            this.consoleWrapper = consoleWrapper;
         }
 
         public T[] ReadNumbers<T>(int numbersToRead = 1)
         {
             List<T> numbers = new List<T>();
+            string pluralize = "";
+            string numbersLeftToRead = "";
+            string endInput = "";
 
             bool run = true;
             while (run)
             {
-                string pluralize =
-                    numbersToRead - numbers.Count >= 2
-                    || numbersToRead < 0
-                    ? "s" 
-                    : "";
-                string numbersLeftToRead =
-                    numbersToRead < 0
-                    ? ""
-                    : (numbersToRead - numbers.Count).ToString();
-                string endInputMessage =
-                    numbersToRead < 0
-                    ? " (end with \";\")"
-                    : "";
+                if (numbersToRead - numbers.Count >= 2 || numbersToRead < 0)
+                    pluralize = "s";
+                else
+                    pluralize = "";
 
-                _consoleWrapper.Write("Input {0} number{1}{2}: ",
-                    numbersLeftToRead, pluralize, endInputMessage);
+                if (numbersToRead < 0)
+                {
+                    numbersLeftToRead = "";
+                    endInput = " (end with \";\")";
+                }
+                else
+                {
+                    numbersLeftToRead = " " + (numbersToRead - numbers.Count).ToString();
+                    endInput = "";
+                }
+
+                consoleWrapper.Write("Input{0} number{1}{2}: ",
+                    numbersLeftToRead, pluralize, endInput);
 
                 string[] inputs = HandleNumberString(
-                    _consoleWrapper.ReadLine())
+                    consoleWrapper.ReadLine())
                     .Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
                 foreach (string s in inputs)
@@ -49,19 +55,21 @@ namespace Calculator
                         run = false;
                         break;
                     }
-                    if (numbersToRead >= 0)
-                        if (numbers.Count >= numbersToRead)
-                        {
-                            run = false;
-                            break;
-                        }
+
+                    if (numbersToRead >= 0
+                        && numbers.Count >= numbersToRead)
+                    {
+                        run = false;
+                        break;
+                    }
+
                     try
                     {
                         numbers.Add(ConvertStringToNumber<T>(s));
                     }
                     catch (Exception ex)
                     {
-                        _consoleWrapper.WriteLine(ex.Message);
+                        consoleWrapper.WriteLine(ex.Message);
                         run = false;
                         break;
                     }
@@ -77,7 +85,6 @@ namespace Calculator
             return numbers.ToArray<T>();
         }
 
-        // TODO: replace with regex
         private string HandleNumberString(string numbers)
         {
             StringBuilder sb = new StringBuilder(numbers);
